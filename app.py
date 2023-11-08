@@ -55,10 +55,10 @@ def call_url(url):
 def get_hook(webhook, path):
     if webhook:
         if webhook.__contains__('?'):
-            webhook + '&path=%s' % path
+            return webhook + '&path=%s' % path
         else:
-            webhook + '?path=%s' % path
-    return webhook
+            return webhook + '?path=%s' % path
+    return None
 
 
 @app.route('/<path:path>', methods=['GET'])
