@@ -19,7 +19,7 @@ kappa==0.6.0
 MarkupSafe==2.0.1
 pep517==0.12.0
 pip-tools==6.4.0
-placebo==0.10.0
+placebo
 pynamodb==5.5.0
 python-dateutil==2.8.2
 python-slugify==5.0.2
