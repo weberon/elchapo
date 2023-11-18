@@ -2,12 +2,14 @@
 all general purpose function goes here
 """
 import json
+import logging
 from functools import wraps
 from datetime import datetime, timedelta
 
 from dateutil.parser import parse
 import pytz
 
+logger = logging.getLogger(__name__)
 
 def default_value(default_value_dict=None):
     """
