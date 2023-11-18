@@ -3,13 +3,13 @@ all general purpose function goes here
 """
 import json
 import logging
-from functools import wraps
-from datetime import datetime, timedelta
-
-from dateutil.parser import parse
 import pytz
-
+from datetime import datetime, timedelta
+from dateutil.parser import parse
+from functools import wraps
 from profanity_check import predict
+from random import choice
+
 from models import ShortURL
 
 logger = logging.getLogger(__name__)
@@ -269,3 +269,14 @@ def is_profane(string):
 		return True
 	else:
 		return False
+
+# A function to generate a short URL in base-58 format given a long URL
+def generate_short_url(length=5):
+	# Only these characters are acceptable for generating the short URL (base58 format)
+	char_range = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+	while True:
+		# Generates a short URL that is by default 5 chars long
+		short_url = ''.join(choice(char_range) for _ in range(length))
+		# Return the short url when the conditions are met
+		if not is_profane(short_url) and not is_existing_shorturl(short_url):
+			return short_url
