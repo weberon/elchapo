@@ -256,14 +256,11 @@ def is_profane(string):
 	"""
 	A simple function that uses prediction libraries to determine if a string argument is profane.
 	"""
-	term = None
 	if not type(string) == str:
-		logger.warning(f"The given string argument: {string} is not a valid data-type to check for profanity. Explicitly converting it to string")
-		term = str(string)
-	else:
-		term = string
-	result = predict([term])
-
+		logger.warning(f"The given argument: {string} is not a valid data-type to check for profanity.")
+		raise TypeError("The argument to this function must be a string.")
+	result = predict([string])
+ 
 	if result >= 0.5:
 		logger.warning(f"The given string argument: {string} is profane and hence cannot be used for setting a short URL")
 		return True
