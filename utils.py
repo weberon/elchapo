@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from dateutil.parser import parse
 import pytz
 
+from profanity_check import predict
 from models import ShortURL
 
 logger = logging.getLogger(__name__)
@@ -247,4 +248,24 @@ def is_existing_shorturl(string):
 		logging.warning(f"The given string argument: {string} already exists in the database. Hence, it cannot be reused.")
 		return True
 	except ShortURL.DoesNotExist:
+		return False
+
+# A function to check if the short url generated contains profanity
+def is_profane(string):
+	# For more documentation about how it works, please head over to https://pypi.org/project/alt-profanity-check/	
+	"""
+	A simple function that uses prediction libraries to determine if a string argument is profane.
+	"""
+	term = None
+	if not type(string) == str:
+		logger.warning(f"The given string argument: {string} is not a valid data-type to check for profanity. Explicitly converting it to string")
+		term = str(string)
+	else:
+		term = string
+	result = predict([term])
+
+	if result >= 0.5:
+		logger.warning(f"The given string argument: {string} is profane and hence cannot be used for setting a short URL")
+		return True
+	else:
 		return False
