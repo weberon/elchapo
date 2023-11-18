@@ -1,7 +1,9 @@
 """
 model for lmabda
 """
+from os import getenv
 from pynamodb.attributes import (
+    MapAttribute,
     UnicodeAttribute, UTCDateTimeAttribute, BooleanAttribute
 )
 from pynamodb.models import Model
@@ -38,3 +40,22 @@ class ShortURL(Model):
 # automatically creates a table in dynamo db if doesnt exist.
 if not ShortURL.exists():
     ShortURL.create_table(wait=True, billing_mode="PAY_PER_REQUEST")
+
+# A DynamoDB Model for request logging
+class RequestLogger(Model):
+	"""A DynamoDB collection for logging request metadata for every request"""
+	class Meta:
+		# Setting the meta explicitly for testing purposes.
+		table_name = 'elchapo_request_logger'
+		region = getenv("AWS_REGION")
+		# Add this to prevent table creation errors on AWS DynamoDB
+		billing_mode = 'PAY_PER_REQUEST'
+	
+	# Attributes part of the model
+	short_url = UnicodeAttribute(attr_name="Associated short URL", hash_key=True)
+	request=MapAttribute(attr_name="Request data")
+	timestamp = UTCDateTimeAttribute(default=get_now(), range_key=True)
+
+# Create the table if it does not exist
+if not RequestLogger.exists():
+	RequestLogger.create_table(wait=True)
