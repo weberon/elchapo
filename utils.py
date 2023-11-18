@@ -9,6 +9,8 @@ from datetime import datetime, timedelta
 from dateutil.parser import parse
 import pytz
 
+from models import ShortURL
+
 logger = logging.getLogger(__name__)
 
 def default_value(default_value_dict=None):
@@ -236,3 +238,13 @@ def fetch_request_metadata(request):
 		'user_agent': str(request.user_agent),
 	}
 	return metadata
+
+# A function to check if the short url generated already exists in the database
+def is_existing_shorturl(string):
+	"""Returns either True or False depending on its existence on its database."""
+	try:
+		ShortURL.get(string)
+		logging.warning(f"The given string argument: {string} already exists in the database. Hence, it cannot be reused.")
+		return True
+	except ShortURL.DoesNotExist:
+		return False
