@@ -1,7 +1,9 @@
 """
 model for lmabda
 """
+from datetime import datetime
 from os import getenv
+from pytz import UTC
 from pynamodb.attributes import (
     MapAttribute,
     UnicodeAttribute, UTCDateTimeAttribute, BooleanAttribute
@@ -9,8 +11,13 @@ from pynamodb.attributes import (
 from pynamodb.models import Model
 
 from constants import ENV, AWS_REGION
-from utils import get_now
 
+# Copy-pasting this function from utils to prevent ImportError (Circular imports)
+def get_now():	
+	"""
+	get current datetime in UTC
+	"""
+	return datetime.utcnow().replace(tzinfo=UTC)
 
 def create_table_name(table_name):
     """
