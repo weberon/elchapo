@@ -222,3 +222,15 @@ def add_minutes(date, minutes=0):
     if not isinstance(date, datetime):
         raise ValueError('date should be datetime')
     return date + timedelta(minutes=minutes)
+
+# Function to extract metadata of the request
+def fetch_request_metadata(request):
+	metadata = {
+		'method': request.method,
+		'url': request.url,
+		'path': request.path,
+		'headers': dict(request.headers),
+		'client_ip': request.remote_addr,
+		'user_agent': str(request.user_agent),
+	}
+	return metadata
