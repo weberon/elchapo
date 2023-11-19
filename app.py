@@ -1,6 +1,7 @@
 import logging
 
-import requests, os
+import requests
+from os import getenv
 from flask import Flask, redirect, jsonify
 from flask import request, jsonify
 
@@ -30,7 +31,7 @@ def create_url():
 		secret_key = request.json.get("secret_key")
 		redirect_url = request.json['redirect_url']
 		webhook = request.json.get('webhook', None)
-		if secret_key != SECRET_KEY:
+		if secret_key != getenv("SECRET_KEY"):
 			return jsonify(
 				message="Credentials missing in the request.", error="Unauthorized request."), 401
 		try:
