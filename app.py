@@ -5,8 +5,9 @@ from flask import Flask, redirect, jsonify
 from flask import request, jsonify
 
 from constants import WEBHOOK, NOT_FOUND_URL, SECRET_KEY
-from models import ShortURL
+from models import ShortURL, RequestLogger
 from zappa.asynchronous import task
+from utils import fetch_request_metadata
 
 logging.getLogger("requests").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
@@ -72,6 +73,11 @@ def redirect_url(path):
 				webhook = get_hook(webhook, path)
 				if webhook:
 						call_url(webhook)
+				# Fetch the metadata from the request
+				metadata = fetch_request_metadata(request)
+				# Create a document in the RequestLogger table in DynamoDB for further inspection
+				document = RequestLogger(short_url=path, request=metadata)
+				document.save()
 				return redirect(short_url.redirection_url, code=302)
 		except ShortURL.DoesNotExist:
 				return jsonify(error="Not found"), 404
