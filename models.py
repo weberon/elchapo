@@ -33,7 +33,7 @@ class ShortURL(Model):
 		set meta of table
 		"""
 		table_name = create_table_name("el-chapo-short-url-store")
-		region = getenv("environ")
+		region = getenv("AWS_REGION")
 
 	url = UnicodeAttribute(hash_key=True, null=False)
 	redirection_url = UnicodeAttribute(null=False)
