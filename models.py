@@ -65,4 +65,4 @@ class RequestLogger(Model):
 
 # Create the table if it does not exist
 if not RequestLogger.exists():
-	RequestLogger.create_table(wait=True)
+	RequestLogger.create_table(wait=True, billing_mode="PAY_PER_REQUEST")
