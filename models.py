@@ -4,10 +4,7 @@ model for lmabda
 from datetime import datetime
 from os import getenv
 from pytz import UTC
-from pynamodb.attributes import (
-		MapAttribute,
-		UnicodeAttribute, UTCDateTimeAttribute, BooleanAttribute
-)
+from pynamodb.attributes import (	MapAttribute,	UnicodeAttribute, UTCDateTimeAttribute, BooleanAttribute )
 from pynamodb.models import Model
 
 from constants import ENV, AWS_REGION
