@@ -9,7 +9,7 @@ from flask import request, jsonify
 from constants import WEBHOOK, NOT_FOUND_URL, SECRET_KEY
 from models import ShortURL, RequestLogger
 from zappa.asynchronous import task
-from utils import fetch_request_metadata, generate_short_url
+from utils import get_now, fetch_request_metadata, generate_short_url
 
 logging.getLogger("requests").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
@@ -99,8 +99,40 @@ def redirect_url(path):
 		except ShortURL.DoesNotExist:
 				return jsonify(error="Not found"), 404
 
+@app.route('/<path:path>', methods=['PATCH'])
+def update_url(path):
+	webhook = request.json.get("webhook", None)
+	redirect_url = request.json.get("redirect_url", None)
+	secret_key = request.json.get("secret_key", None)
+
+	# Return a 401 if the request is not authenticated
+	if secret_key and secret_key != getenv("SECRET_KEY"):
+		return jsonify(message="Credentials missing in the request or the value of the secret key does not match.", error="Unauthorized request."), 401
+	try:
+		# Fetch the document with the associated short url
+		document = ShortURL.get(path)
+		# Modify the document to include both, if the webhook is specified
+		if webhook and redirect_url:
+			document.webhook = webhook
+			document.redirection_url = redirect_url
+			# Update the timestamp to reflect the new timestamp
+			document.created_at = get_now()
+			document.save()
+			return jsonify(message="Your request to perform a partial update on the resource is successful.", short_url=document.url, redirect_url= document.redirection_url, webhook=document.webhook,timestamp=document.created_at), 200
+		# Modify only the re-direction URL otherwise
+		elif redirect_url:
+			document.redirection_url = redirect_url
+			# Update the timestamp to reflect the new timestamp
+			document.created_at = get_now()
+			document.save()
+			return jsonify(message="Your request to perform a partial update on the resource is successful.", short_url=document.url, redirect_url= document.redirection_url,timestamp=document.created_at), 200
+		else:
+			return jsonify(message="The request body does not contain any redirection URL or webhook. Hence this request cannot be processed for this method.", error="Bad request"), 400
+	# Return a 404 if it is not found in the database
+	except ShortURL.DoesNotExist:
+		return jsonify(message="The given Short URL does not exist as a document", error="Not found"), 404
 
 # We only need this for local development.
 if __name__ == '__main__':
 		MAIN = True
-		app.run(host='0.0.0.0', port=5601)
+		app.run(host='0.0.0.0', port=5601,debug=True)
