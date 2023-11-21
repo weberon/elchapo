@@ -135,4 +135,4 @@ def update_url(path):
 # We only need this for local development.
 if __name__ == '__main__':
 		MAIN = True
-		app.run(host='0.0.0.0', port=5601,debug=True)
+		app.run(host='0.0.0.0', port=5601)
